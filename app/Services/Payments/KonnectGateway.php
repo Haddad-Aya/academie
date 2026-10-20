@@ -115,7 +115,27 @@ class KonnectGateway implements PaymentGateway
             return null;
         }
 
-        $status = ($details['status'] ?? null) === 'completed' ? 'paid' : 'pending';
+        $providerStatus = strtolower((string) ($details['status'] ?? ''));
+        $transactionStatuses = collect($details['transactions'] ?? [])
+            ->filter(fn ($transaction) => is_array($transaction) && isset($transaction['status']))
+            ->map(fn (array $transaction) => strtolower((string) $transaction['status']))
+            ->values();
+
+        // Chez Konnect, payment.status=pending peut signifier « pas encore tenté »
+        // ou « tentative échouée ». On ne marque failed que sur un statut explicite.
+        $terminalFailureStatuses = [
+            'failed', 'failure', 'declined', 'rejected', 'cancelled', 'canceled', 'expired', 'error',
+        ];
+        $hasTerminalPaymentFailure = in_array($providerStatus, $terminalFailureStatuses, true);
+        $allTransactionsFailed = $transactionStatuses->isNotEmpty()
+            && $transactionStatuses->every(fn (string $transactionStatus) =>
+                in_array($transactionStatus, $terminalFailureStatuses, true));
+
+        $status = match (true) {
+            $providerStatus === 'completed' => 'paid',
+            $hasTerminalPaymentFailure || $allTransactionsFailed => 'failed',
+            default => 'pending',
+        };
         $expectedAmount = $this->amountInMillimes($payment->amount);
         $receivedAmount = filter_var($details['amount'] ?? null, FILTER_VALIDATE_INT);
         $reachedAmount = filter_var($details['reachedAmount'] ?? null, FILTER_VALIDATE_INT);
@@ -138,7 +158,11 @@ class KonnectGateway implements PaymentGateway
             return [
                 'provider_ref' => $paymentRef,
                 'status' => 'failed',
-                'payload' => ['status' => $details['status'] ?? null, 'amount_mismatch' => true],
+                'payload' => [
+                    'status' => $details['status'] ?? null,
+                    'transaction_statuses' => $transactionStatuses->all(),
+                    'amount_mismatch' => true,
+                ],
             ];
         }
 
@@ -148,6 +172,7 @@ class KonnectGateway implements PaymentGateway
             'amount' => $status === 'paid' ? $expectedAmount / 1000 : null,
             'payload' => [
                 'status' => $details['status'] ?? null,
+                'transaction_statuses' => $transactionStatuses->all(),
                 'amount' => $details['amount'] ?? null,
                 'reachedAmount' => $details['reachedAmount'] ?? null,
                 'token' => $currency,

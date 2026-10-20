@@ -51,7 +51,11 @@ class RegistrationController extends Controller
             return back()->withErrors(['training_group_id' => 'Ce groupe est complet.']);
         }
 
-        $payment = DB::transaction(function () use ($child, $group, $season) {
+        $paymentMethod = ($data['pay'] ?? 'later') === 'online'
+            ? Payment::METHOD_CARD
+            : Payment::METHOD_ONSITE;
+
+        $payment = DB::transaction(function () use ($child, $group, $season, $paymentMethod) {
             $registration = new Registration([
                 'child_id' => $child->id,
                 'training_group_id' => $group->id,
@@ -71,6 +75,7 @@ class RegistrationController extends Controller
                 'amount' => $group->price,
                 'currency' => config('payments.currency'),
                 'billing_month' => now()->format('Y-m'),
+                'payment_method' => $paymentMethod,
             ]);
         });
 

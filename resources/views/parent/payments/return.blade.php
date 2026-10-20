@@ -8,7 +8,7 @@
   </header>
   <main class="content">
     <section class="card">
-      {{-- Cette page AFFICHE le statut ; seul le webhook signé ou l'administrateur peut le passer à « payé ». --}}
+      {{-- Le statut est synchronisé depuis l'API Konnect au retour, ou via le webhook. --}}
       @if ($payment->status === 'paid')
         <p class="flash flash-ok" data-i18n="st_paid">Paiement reçu. Merci !</p>
       @elseif ($payment->status === 'failed')

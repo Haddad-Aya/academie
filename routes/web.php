@@ -52,6 +52,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:coach,admin')->prefix('coach')->name('coach.')->group(function () {
         Route::get('/', [Coach\AttendanceController::class, 'groups'])->name('groups');
         Route::post('/groups/{group}/sessions', [Coach\AttendanceController::class, 'storeSession'])->name('sessions.store');
+        Route::get('/sessions/history', [Coach\AttendanceController::class, 'history'])->name('sessions.history');
         Route::get('/sessions/{session}', [Coach\AttendanceController::class, 'show'])->name('attendance.show');
         Route::post('/sessions/{session}', [Coach\AttendanceController::class, 'store'])->name('attendance.store');
     });
@@ -80,6 +81,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/gallery/{item}', [Admin\GalleryController::class, 'destroy'])->name('gallery.destroy');
 
         Route::get('/payments', [Admin\PaymentController::class, 'index'])->name('payments.index');
+        Route::get('/payments/statistics', [Admin\PaymentController::class, 'statistics'])->name('payments.statistics');
         Route::post('/payments/{payment}/paid', [Admin\PaymentController::class, 'markPaid'])->name('payments.paid');
     });
 });

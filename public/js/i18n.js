@@ -60,7 +60,13 @@ const T = {
     pend_amount: "Montant à régler", ret_title: "Statut du paiement", st_paid: "Paiement reçu. Merci !",
     st_pending: "Paiement en attente de confirmation.", st_failed: "Le paiement a échoué.", retry: "Réessayer", go_home: "Retour à l'accueil",
     cg_title: "Mes groupes", add_session: "Ajouter une séance", date_time: "Date et heure", no_sessions: "Aucune séance prévue.",
-    open_call: "Faire l'appel", no_groups: "Aucun groupe ne vous est attribué."
+    open_call: "Faire l'appel", no_groups: "Aucun groupe ne vous est attribué.",
+    session_history_link: "Consulter toutes les séances et l'historique", session_history: "Séances et historique",
+    session_history_sub: "Retrouvez les séances et les appels par période.", history_year: "Année", history_month: "Mois",
+    history_all_months: "Toute l'année", history_group: "Groupe", history_all_groups: "Tous les groupes",
+    history_filter: "Filtrer les séances", history_call_done: "Appel fait", history_call_todo: "Appel à faire",
+    history_call_edit: "Consulter ou modifier l'appel", history_empty: "Aucune séance trouvée pour cette période.",
+    history_no_location: "Lieu non précisé"
   },
   ar: {
     brand: "أكاديمية دجربة لكرة القدم المستقبلية", logo: "", langBtn: "Français",
@@ -114,7 +120,13 @@ const T = {
     pend_amount: "المبلغ المطلوب", ret_title: "حالة الدفع", st_paid: "تم استلام الدفع. شكرًا!",
     st_pending: "الدفع في انتظار التأكيد.", st_failed: "فشلت عملية الدفع.", retry: "إعادة المحاولة", go_home: "العودة إلى الرئيسية",
     cg_title: "مجموعاتي", add_session: "إضافة حصة", date_time: "التاريخ والساعة", no_sessions: "لا توجد حصص مبرمجة.",
-    open_call: "تسجيل الحضور", no_groups: "لم يتم إسناد أي مجموعة إليك."
+    open_call: "تسجيل الحضور", no_groups: "لم يتم إسناد أي مجموعة إليك.",
+    session_history_link: "عرض جميع الحصص والسجل", session_history: "الحصص والسجل",
+    session_history_sub: "اعثر على الحصص وسجلات الحضور حسب الفترة.", history_year: "السنة", history_month: "الشهر",
+    history_all_months: "السنة كاملة", history_group: "المجموعة", history_all_groups: "جميع المجموعات",
+    history_filter: "تصفية الحصص", history_call_done: "تم تسجيل الحضور", history_call_todo: "تسجيل الحضور مطلوب",
+    history_call_edit: "عرض سجل الحضور أو تعديله", history_empty: "لم يتم العثور على حصص في هذه الفترة.",
+    history_no_location: "المكان غير محدد"
   }
 };
 
@@ -142,6 +154,10 @@ function setLang(l) {
   var b = document.getElementById("langBtn");
   if (b) b.textContent = T[l].langBtn;
   try { localStorage.setItem("lang", l); } catch (e) {}
+  // Le cookie permet aux requêtes Laravel (validation, connexion, etc.)
+  // d'utiliser la même langue que l'interface côté navigateur.
+  document.cookie = "locale=" + l + "; path=/; max-age=31536000; samesite=lax" +
+    (location.protocol === "https:" ? "; secure" : "");
   document.dispatchEvent(new CustomEvent("langchange", { detail: l }));
 }
 

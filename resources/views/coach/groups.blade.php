@@ -14,6 +14,8 @@
   <main class="content">
     @include('partials.flash')
 
+    <a class="btn btn-outline btn-block" href="{{ route('coach.sessions.history') }}" data-i18n="session_history_link">Consulter toutes les séances et l’historique</a>
+
     @forelse ($groups as $g)
       <section class="card" style="display:flex;flex-direction:column;gap:10px">
         <div>

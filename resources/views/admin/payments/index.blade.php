@@ -9,6 +9,8 @@
   <main class="main">
     <h1 class="h">Paiements</h1>
 
+    <p><a class="btn btn-outline btn-sm" href="{{ route('admin.payments.statistics') }}">Voir les statistiques mensuelles</a></p>
+
     @include('partials.flash')
 
     <nav class="filters" aria-label="Filtrer par statut">
@@ -21,7 +23,7 @@
     <section class="card">
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Mois dû</th><th>Enfant</th><th>Parent</th><th>Groupe</th><th>Montant</th><th>Statut</th><th></th></tr></thead>
+          <thead><tr><th>Mois dû</th><th>Enfant</th><th>Parent</th><th>Groupe</th><th>Montant</th><th>Méthode</th><th>Statut</th><th></th></tr></thead>
           <tbody>
             @forelse ($payments as $p)
               <tr>
@@ -30,6 +32,7 @@
                 <td>{{ $p->registration->child->parent->name }}</td>
                 <td>{{ $p->registration->trainingGroup->name }}</td>
                 <td>{{ number_format((float) $p->amount, 3, ',', ' ') }} {{ $p->currency }}</td>
+                <td>@if ($p->payment_method === 'card') Carte bancaire @elseif ($p->payment_method === 'onsite') Sur place @else Non précisée @endif</td>
                 <td>
                   @if ($p->status === 'paid') <span class="badge badge-ok">Payé</span>
                   @elseif ($p->status === 'failed') <span class="badge badge-off">Échec</span>
@@ -44,7 +47,7 @@
                 </td>
               </tr>
             @empty
-              <tr><td colspan="7" class="muted">Aucun paiement.</td></tr>
+              <tr><td colspan="8" class="muted">Aucun paiement.</td></tr>
             @endforelse
           </tbody>
         </table>
