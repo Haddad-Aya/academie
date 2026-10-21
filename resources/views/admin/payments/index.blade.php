@@ -32,7 +32,13 @@
                 <td>{{ $p->registration->child->parent->name }}</td>
                 <td>{{ $p->registration->trainingGroup->name }}</td>
                 <td>{{ number_format((float) $p->amount, 3, ',', ' ') }} {{ $p->currency }}</td>
-                <td>@if ($p->payment_method === 'card') Carte bancaire @elseif ($p->payment_method === 'onsite') Sur place @else Non précisée @endif</td>
+                <td>
+                  @if ($p->payment_method === 'card' && $p->status === 'failed') Échec du paiement en ligne
+                  @elseif ($p->payment_method === 'card' && $p->status === 'pending') Paiement en ligne (en attente)
+                  @elseif ($p->payment_method === 'card') Carte bancaire
+                  @elseif ($p->payment_method === 'onsite') Sur place
+                  @else Non précisée @endif
+                </td>
                 <td>
                   @if ($p->status === 'paid') <span class="badge badge-ok">Payé</span>
                   @elseif ($p->status === 'failed') <span class="badge badge-off">Échec</span>

@@ -18,6 +18,8 @@
           <td>
             @if ($r->payments->contains('status', 'paid')) <span class="badge badge-ok">Payé</span>
             @elseif ($r->payments->isEmpty()) <span class="muted">—</span>
+            @elseif ($r->payments->contains(fn ($payment) => $payment->status === 'failed' && $payment->payment_method === 'card')) <span class="badge badge-off">Échec du paiement en ligne</span>
+            @elseif ($r->payments->contains('status', 'failed')) <span class="badge badge-off">Échec</span>
             @else <span class="badge badge-wait">En attente</span> @endif
           </td>
           <td>
