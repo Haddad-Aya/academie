@@ -31,33 +31,36 @@ class PaymentController extends Controller
     {
         $validated = $request->validate(['year' => ['nullable', 'integer', 'min:2020', 'max:2100']]);
         $year = (int) ($validated['year'] ?? now()->year);
-        $from = sprintf('%04d-01', $year);
-        $to = sprintf('%04d-12', $year);
-        $payments = Payment::query()
-            ->where(function ($query) use ($from, $to, $year) {
-                $query->whereBetween('billing_month', [$from, $to])
-                    ->orWhere(function ($legacy) use ($year) {
-                        $legacy->whereNull('billing_month')->whereYear('created_at', $year);
-                    });
-            })
-            ->get(['billing_month', 'created_at', 'amount', 'status', 'payment_method', 'currency']);
-
-        $months = collect(range(1, 12))->map(function (int $month) use ($payments, $year) {
+        $months = collect(range(1, 12))->map(function (int $month) use ($year) {
             $key = sprintf('%04d-%02d', $year, $month);
-            $items = $payments->filter(fn (Payment $payment) =>
-                ($payment->billing_month ?: $payment->created_at?->format('Y-m')) === $key);
-            $paid = $items->where('status', Payment::PAID);
+            $monthStart = Carbon::create($year, $month, 1)->startOfMonth();
+            $nextMonth = $monthStart->copy()->addMonth();
+            $totals = Payment::query()
+                ->where(function ($query) use ($key, $monthStart, $nextMonth) {
+                    $query->where('billing_month', $key)
+                        ->orWhere(function ($legacy) use ($monthStart, $nextMonth) {
+                            $legacy->whereNull('billing_month')
+                                ->where('created_at', '>=', $monthStart)
+                                ->where('created_at', '<', $nextMonth);
+                        });
+                })
+                ->selectRaw('COALESCE(SUM(amount), 0) AS expected')
+                ->selectRaw('COALESCE(SUM(CASE WHEN status = ? THEN amount ELSE 0 END), 0) AS collected', [Payment::PAID])
+                ->selectRaw('COALESCE(SUM(CASE WHEN status = ? AND payment_method = ? THEN amount ELSE 0 END), 0) AS onsite', [Payment::PAID, Payment::METHOD_ONSITE])
+                ->selectRaw('COALESCE(SUM(CASE WHEN status = ? THEN 1 ELSE 0 END), 0) AS paid_count', [Payment::PAID])
+                ->selectRaw('COALESCE(SUM(CASE WHEN status = ? THEN 1 ELSE 0 END), 0) AS pending_count', [Payment::PENDING])
+                ->selectRaw('COALESCE(SUM(CASE WHEN status = ? THEN 1 ELSE 0 END), 0) AS failed_count', [Payment::FAILED])
+                ->first();
 
             return [
                 'key' => $key,
                 'label' => Carbon::createFromFormat('!Y-m', $key)->locale('fr')->translatedFormat('F Y'),
-                'expected' => $items->sum(fn ($payment) => (float) $payment->amount),
-                'collected' => $paid->sum(fn ($payment) => (float) $payment->amount),
-                'card' => $paid->where('payment_method', Payment::METHOD_CARD)->sum(fn ($payment) => (float) $payment->amount),
-                'onsite' => $paid->where('payment_method', Payment::METHOD_ONSITE)->sum(fn ($payment) => (float) $payment->amount),
-                'paid_count' => $paid->count(),
-                'pending_count' => $items->where('status', Payment::PENDING)->count(),
-                'failed_count' => $items->where('status', Payment::FAILED)->count(),
+                'expected' => (float) $totals->expected,
+                'collected' => (float) $totals->collected,
+                'onsite' => (float) $totals->onsite,
+                'paid_count' => (int) $totals->paid_count,
+                'pending_count' => (int) $totals->pending_count,
+                'failed_count' => (int) $totals->failed_count,
             ];
         });
 

@@ -45,6 +45,7 @@
         <div class="card muted">Aucune photo dans la galerie pour le moment.</div>
       @endforelse
     </section>
+    <div class="pager" style="margin-top:14px">{{ $items->links() }}</div>
   </main>
 </div>
 @endsection

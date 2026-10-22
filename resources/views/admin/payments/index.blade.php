@@ -29,14 +29,20 @@
               <tr>
                 <td>{{ $p->billing_month ? \Carbon\Carbon::createFromFormat('!Y-m', $p->billing_month)->format('m/Y') : $p->created_at->format('m/Y') }}</td>
                 <td><strong>{{ $p->registration->child->full_name }}</strong></td>
-                <td>{{ $p->registration->child->parent->name }}</td>
+                <td>
+                  {{ $p->registration->child->parent->name }}<br>
+                  <span class="muted">
+                    @if ($p->registration->child->parent->phone)
+                      <a href="tel:{{ preg_replace('/[^0-9+]/', '', $p->registration->child->parent->phone) }}">{{ $p->registration->child->parent->phone }}</a><br>
+                    @endif
+                    <a href="mailto:{{ $p->registration->child->parent->email }}">{{ $p->registration->child->parent->email }}</a>
+                  </span>
+                </td>
                 <td>{{ $p->registration->trainingGroup->name }}</td>
                 <td>{{ number_format((float) $p->amount, 3, ',', ' ') }} {{ $p->currency }}</td>
                 <td>
-                  @if ($p->payment_method === 'card' && $p->status === 'failed') Échec du paiement en ligne
-                  @elseif ($p->payment_method === 'card' && $p->status === 'pending') Paiement en ligne (en attente)
-                  @elseif ($p->payment_method === 'card') Carte bancaire
-                  @elseif ($p->payment_method === 'onsite') Sur place
+                  @if ($p->payment_method === 'onsite') Sur place
+                  @elseif ($p->payment_method === 'card') Historique
                   @else Non précisée @endif
                 </td>
                 <td>

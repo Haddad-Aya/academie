@@ -41,12 +41,24 @@ L'application est disponible sur `http://127.0.0.1:8000`. Le seeder crée les gr
    npm run build
    php artisan migrate --force
    php artisan storage:link
+   ```
+
+4. Lors de la première mise en production seulement, configure `ADMIN_EMAIL` et un mot de passe administrateur robuste avant le seeding, puis exécute :
+
+   ```sh
+   php artisan db:seed --force
+   ```
+
+   Le seeder lit ces valeurs depuis `config/admin.php`, y compris si le cache de configuration est déjà actif. Si le mot de passe reste vide, un mot de passe aléatoire est affiché une seule fois dans le terminal.
+
+5. Après le seeding initial, optimise la configuration de Laravel :
+
+   ```sh
    php artisan optimize
    ```
 
-4. Lors de la première mise en production seulement, configure `ADMIN_EMAIL` et un mot de passe administrateur robuste, puis exécute `php artisan db:seed --force`.
-5. Configure le cron de l'hébergeur pour exécuter `php artisan schedule:run` chaque minute. Le planificateur crée les échéances mensuelles des inscriptions approuvées.
-6. Après le déploiement, vérifie la connexion, la création d'une inscription, l'envoi d'e-mails, les images de galerie et les webhooks entrants.
+6. Configure le cron de l'hébergeur pour exécuter `php artisan schedule:run` chaque minute. Le planificateur crée les échéances mensuelles des inscriptions approuvées.
+7. Après le déploiement, vérifie la connexion, la création d'une inscription, l'envoi d'e-mails et les images de galerie. Confirme un règlement manuel depuis l'administration.
 
 ### Pages de panne et maintenance
 
@@ -56,12 +68,9 @@ L'application est disponible sur `http://127.0.0.1:8000`. Le seeder crée les gr
 
 Ne mets jamais `.env`, les clés API ou les mots de passe dans Git. Après une fuite d'identifiants, révoque-les et génère-en de nouveaux.
 
-## Paiement Konnect
+## Règlement des cotisations
 
-- Pour les essais, utilise les identifiants et l'URL API du sandbox ; les paiements de test n'utilisent pas de carte réelle.
-- Pour accepter de vrais paiements, termine l'activation du compte Konnect de production, obtiens les identifiants de production et remplace les valeurs sandbox dans les variables `KONNECT_*` du serveur.
-- Configure un domaine HTTPS stable et accessible par Konnect pour le webhook. Un tunnel temporaire Cloudflare ne convient pas comme adresse de production.
-- Teste le cycle complet et le rapprochement des statuts avant d'ouvrir le paiement aux parents. Le service de carte sandbox peut être indisponible indépendamment de l'application.
+Les cotisations sont réglées manuellement à l'académie. Le parent voit les échéances mensuelles de chaque enfant ; l'administration confirme chaque règlement après réception. Les anciens paiements restent dans la base à titre d'historique.
 
 ## Images de la galerie
 

@@ -47,6 +47,13 @@
             @endif
         </div>
 
+        <div>
+            <x-input-label for="phone" value="Téléphone" />
+            <x-text-input id="phone" name="phone" type="tel" class="mt-1 block w-full" :value="old('phone', $user->phone)" autocomplete="tel" placeholder="+216 12 345 678" />
+            <p class="mt-1 text-sm text-gray-600">{{ $user->isParent() ? 'Obligatoire pour que l’académie puisse vous contacter.' : 'Facultatif.' }}</p>
+            <x-input-error class="mt-2" :messages="$errors->get('phone')" />
+        </div>
+
         <div class="flex items-center gap-4">
             <x-primary-button>{{ __('Save') }}</x-primary-button>
 

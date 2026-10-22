@@ -15,7 +15,7 @@ class TrainingGroupController extends Controller
 {
     public function index(): View
     {
-        $groups = TrainingGroup::with('coach')->orderBy('age_min')->get();
+        $groups = TrainingGroup::with('coach')->orderBy('age_min')->paginate(20);
 
         return view('admin.groups.index', compact('groups'));
     }

@@ -26,6 +26,11 @@
         @error('email') <span class="err">{{ $message }}</span> @enderror
       </div>
       <div class="field">
+        <label for="phone" data-i18n="f_phone_req">Téléphone du parent</label>
+        <input id="phone" name="phone" type="tel" class="ltr" value="{{ old('phone') }}" autocomplete="tel" placeholder="+216 12 345 678" required>
+        @error('phone') <span class="err">{{ $message }}</span> @enderror
+      </div>
+      <div class="field">
         <label for="password" data-i18n="f_pass">Mot de passe</label>
         <input id="password" name="password" type="password" class="ltr" autocomplete="new-password" required>
         @error('password') <span class="err">{{ $message }}</span> @enderror

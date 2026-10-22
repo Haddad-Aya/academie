@@ -22,9 +22,12 @@
           <span style="font-size:.88rem">{{ $payment->registration->child->first_name }} · {{ $payment->billing_month ? \Carbon\Carbon::createFromFormat('!Y-m', $payment->billing_month)->format('m/Y') : $payment->created_at->format('m/Y') }}</span>
           <strong class="h" style="display:block"><bdi>{{ number_format((float) $payment->amount, 3, ',', ' ') }} DT</bdi></strong>
         </div>
-        <a class="btn btn-primary" href="{{ route('parent.payments.checkout', $payment) }}" data-i18n="pay">{{ $payment->status === 'failed' ? 'Réessayer' : 'Payer' }}</a>
+        <a class="btn btn-primary" href="{{ route('parent.payments.pending', $payment) }}" data-i18n="onsite_details">Règlement sur place</a>
       </div>
     @endforeach
+    @if ($due->hasPages())
+      <div class="pager" style="margin:8px 0 18px">{{ $due->links() }}</div>
+    @endif
 
     <h2 class="section-title" data-i18n="my_kids">Mes enfants</h2>
 

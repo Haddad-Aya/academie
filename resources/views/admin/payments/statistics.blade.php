@@ -25,7 +25,7 @@
       <div class="table-wrap">
         <table>
           <thead>
-            <tr><th>Mois de cotisation</th><th>Total attendu</th><th>Encaissé</th><th>À régler</th><th>Carte</th><th>Sur place</th><th>Payés</th><th>En attente</th><th>Échoués</th></tr>
+            <tr><th>Mois de cotisation</th><th>Total attendu</th><th>Encaissé</th><th>À régler</th><th>Réglés sur place</th><th>Payés</th><th>En attente</th><th>Échoués</th></tr>
           </thead>
           <tbody>
             @foreach ($months as $month)
@@ -34,7 +34,6 @@
                 <td>{{ number_format($month['expected'], 3, ',', ' ') }} TND</td>
                 <td><strong>{{ number_format($month['collected'], 3, ',', ' ') }} TND</strong></td>
                 <td>{{ number_format(max(0, $month['expected'] - $month['collected']), 3, ',', ' ') }} TND</td>
-                <td>{{ number_format($month['card'], 3, ',', ' ') }} TND</td>
                 <td>{{ number_format($month['onsite'], 3, ',', ' ') }} TND</td>
                 <td>{{ $month['paid_count'] }}</td>
                 <td>{{ $month['pending_count'] }}</td>

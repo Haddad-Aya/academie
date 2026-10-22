@@ -81,13 +81,6 @@ class AccessControlTest extends TestCase
         $this->actingAs($admin)->get(route('admin.dashboard'))->assertForbidden();
     }
 
-    public function test_le_webhook_sans_signature_valide_est_refuse(): void
-    {
-        // Driver "manual" par défaut : aucun webhook n'est accepté.
-        $this->postJson(route('webhooks.payments'), ['provider_ref' => 'x', 'status' => 'paid'])
-            ->assertStatus(400);
-    }
-
     public function test_marquer_un_paiement_paye_deux_fois_ne_change_rien(): void
     {
         $parent = $this->makeUser('parent');

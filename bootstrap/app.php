@@ -27,9 +27,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => EnsureRole::class,
         ]);
 
-        // Le prestataire de paiement appelle cette URL sans jeton CSRF :
-        // l'authenticité est vérifiée par la signature du webhook.
-        $middleware->validateCsrfTokens(except: ['webhooks/*']);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

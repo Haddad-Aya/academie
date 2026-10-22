@@ -28,6 +28,7 @@ class PublicSiteController extends Controller
             ->where('active', true)
             ->orderBy('sort_order')
             ->orderByDesc('created_at')
+            ->limit(12)
             ->get();
 
         $categoryCount = $groups->pluck('category')->unique()->count();

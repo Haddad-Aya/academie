@@ -30,7 +30,8 @@ class AttendanceController extends Controller
             ->with(['sessions' => fn ($q) => $q
                 ->where('starts_at', '>=', now()->subDay())
                 ->where('starts_at', '<=', now()->addDays(30))
-                ->orderBy('starts_at')])
+                ->orderBy('starts_at')
+                ->limit(5)])
             ->get();
 
         return view('coach.groups', compact('groups'));
@@ -93,7 +94,7 @@ class AttendanceController extends Controller
         return back()->with('status', 'Séance ajoutée.');
     }
 
-    /** Feuille d'appel. L'entraîneur ne voit que prénom et nom : jamais les notes médicales ni le parent. */
+    /** Feuille d'appel : coordonnées du parent incluses pour les seuls enfants du groupe attribué. */
     public function show(TrainingSession $session): View
     {
         Gate::authorize('manage', $session->trainingGroup);
@@ -145,7 +146,8 @@ class AttendanceController extends Controller
     private function players(TrainingSession $session)
     {
         return Child::query()
-            ->select(['id', 'first_name', 'last_name'])
+            ->select(['id', 'parent_id', 'first_name', 'last_name'])
+            ->with('parent:id,name,email,phone')
             ->whereHas('registrations', fn ($q) => $q
                 ->where('training_group_id', $session->training_group_id)
                 ->where('season', config('academy.season'))

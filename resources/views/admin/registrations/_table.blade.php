@@ -8,7 +8,18 @@
       @forelse ($rows as $r)
         <tr>
           <td><strong>{{ $r->child->full_name }}</strong><br><span class="muted">{{ $r->child->age }} ans</span></td>
-          <td>{{ $r->child->parent->name }}<br><span class="muted">{{ $r->child->parent->email }}</span></td>
+          <td>
+            {{ $r->child->parent->name }}<br>
+            <span class="muted">
+              @if ($r->child->parent->phone)
+                <a href="tel:{{ preg_replace('/[^0-9+]/', '', $r->child->parent->phone) }}">{{ $r->child->parent->phone }}</a><br>
+              @endif
+              @if ($r->child->parent->email)
+                <a href="mailto:{{ $r->child->parent->email }}">{{ $r->child->parent->email }}</a>
+              @endif
+              @if (! $r->child->parent->phone && ! $r->child->parent->email) — @endif
+            </span>
+          </td>
           <td>{{ $r->trainingGroup->name }}</td>
           <td>
             @if ($r->status === 'approved') <span class="badge badge-ok">Validée</span>
@@ -18,7 +29,6 @@
           <td>
             @if ($r->payments->contains('status', 'paid')) <span class="badge badge-ok">Payé</span>
             @elseif ($r->payments->isEmpty()) <span class="muted">—</span>
-            @elseif ($r->payments->contains(fn ($payment) => $payment->status === 'failed' && $payment->payment_method === 'card')) <span class="badge badge-off">Échec du paiement en ligne</span>
             @elseif ($r->payments->contains('status', 'failed')) <span class="badge badge-off">Échec</span>
             @else <span class="badge badge-wait">En attente</span> @endif
           </td>

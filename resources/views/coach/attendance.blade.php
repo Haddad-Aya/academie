@@ -26,14 +26,28 @@
     </b>
     <span class="note" data-i18n="att_hint">Touchez un joueur pour changer son statut.</span>
 
-    {{-- L'entraîneur ne voit que prénom et nom : jamais le parent ni les notes médicales. --}}
+    {{-- Le coach voit uniquement les coordonnées du parent des enfants de son groupe. Les notes médicales restent privées. --}}
     @forelse ($players as $child)
-      <label class="player">
-        <input type="checkbox" name="present[]" value="{{ $child->id }}" @checked(in_array($child->id, $present, true))>
-        <span class="avatar sm h">{{ mb_substr($child->first_name, 0, 1) }}</span>
-        <span class="n">{{ $child->first_name }} {{ mb_substr($child->last_name, 0, 1) }}.</span>
-        <span class="state"><span class="on" data-i18n="present">Présent</span><span class="off" data-i18n="absent">Absent</span></span>
-      </label>
+      <div style="display:grid;gap:4px;margin-bottom:8px">
+        <label class="player">
+          <input type="checkbox" name="present[]" value="{{ $child->id }}" @checked(in_array($child->id, $present, true))>
+          <span class="avatar sm h">{{ mb_substr($child->first_name, 0, 1) }}</span>
+          <span class="n">{{ $child->first_name }} {{ mb_substr($child->last_name, 0, 1) }}.</span>
+          <span class="state"><span class="on" data-i18n="present">Présent</span><span class="off" data-i18n="absent">Absent</span></span>
+        </label>
+        @if ($child->parent)
+          <div class="muted" style="padding:0 12px 4px 54px;font-size:.82rem;line-height:1.7">
+            <strong>{{ $child->parent->name }}</strong><br>
+            @if ($child->parent->phone)
+              <a href="tel:{{ preg_replace('/[^0-9+]/', '', $child->parent->phone) }}">{{ $child->parent->phone }}</a>
+            @endif
+            @if ($child->parent->phone && $child->parent->email) · @endif
+            @if ($child->parent->email)
+              <a href="mailto:{{ $child->parent->email }}">{{ $child->parent->email }}</a>
+            @endif
+          </div>
+        @endif
+      </div>
     @empty
       <p class="note">Aucun enfant n’a une inscription validée pour ce groupe et la saison {{ config('academy.season') }}. L’appel ne peut pas être enregistré.</p>
     @endforelse

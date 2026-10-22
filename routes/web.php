@@ -6,21 +6,10 @@ use App\Http\Controllers\Guardian;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PublicSiteController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Webhook\PaymentWebhookController;
 use Illuminate\Support\Facades\Route;
 
 // Site vitrine : les groupes, entraîneurs et photos sont chargés depuis la base.
 Route::get('/', [PublicSiteController::class, 'index'])->name('home');
-
-// Webhook Konnect : GET payment_ref, statut vérifié ensuite côté serveur auprès de son API.
-Route::get('/webhooks/konnect', PaymentWebhookController::class)
-    ->middleware('throttle:120,1')
-    ->name('webhooks.konnect');
-
-// Ancienne route générique conservée pour les autres passerelles éventuelles.
-Route::post('/webhooks/payments', PaymentWebhookController::class)
-    ->middleware('throttle:120,1')
-    ->name('webhooks.payments');
 
 Route::middleware('auth')->group(function () {
     // Redirige chaque rôle vers son espace après connexion (remplace la route /dashboard de Breeze).
@@ -43,9 +32,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/children/{child}/register', [Guardian\RegistrationController::class, 'create'])->name('registrations.create');
         Route::post('/children/{child}/register', [Guardian\RegistrationController::class, 'store'])->name('registrations.store');
 
-        Route::get('/payments/{payment}/checkout', [Guardian\PaymentController::class, 'checkout'])->name('payments.checkout');
         Route::get('/payments/{payment}/pending', [Guardian\PaymentController::class, 'pending'])->name('payments.pending');
-        Route::get('/payments/{payment}/return', [Guardian\PaymentController::class, 'returned'])->name('payments.return');
     });
 
     /* ---------------- Entraîneurs (et administrateur) ---------------- */

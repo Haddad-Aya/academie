@@ -30,7 +30,9 @@ class DashboardController extends Controller
             ->whereIn('registration_id', $registrations->pluck('id'))
             ->whereIn('status', [Payment::PENDING, Payment::FAILED])
             ->orderBy('billing_month')
-            ->get();
+            ->orderBy('id')
+            ->paginate(10)
+            ->withQueryString();
 
         $groupIds = $registrations
             ->where('status', Registration::APPROVED)
