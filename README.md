@@ -31,7 +31,7 @@ L'application est disponible sur `http://127.0.0.1:8000`. Le seeder crée les gr
 
 ## Déploiement
 
-1. Héberge l'application sur un serveur PHP avec un domaine stable et HTTPS. La racine web du serveur doit pointer vers le dossier `public/`, jamais vers la racine du dépôt.
+1. Utilise un hébergement PHP maintenu et sécurisé. Le projet demande PHP `^8.2`. Au 22 octobre 2026, OVHcloud indique avoir déployé les correctifs PHP de sécurité sur toutes ses versions 7.4 à 8.5 et sur tous ses clusters. Dans le Manager, choisis une version récente compatible avec Laravel 12 (PHP 8.4 si elle est proposée) et vérifie que l'hébergement est à jour. La racine web du serveur doit pointer vers le dossier `public/`, jamais vers la racine du dépôt.
 2. Configure `.env` sur le serveur : `APP_ENV=production`, `APP_DEBUG=false`, `APP_URL=https://ton-domaine`, une base de données de production, un transport SMTP fonctionnel, et un `APP_KEY` généré une seule fois.
 3. Déploie les dépendances et les fichiers compilés :
 

@@ -239,6 +239,6 @@ Variables importantes :
 
 ## 9. Déploiement
 
-Le guide de mise en ligne détaillé se trouve dans [README.md](README.md). Points impératifs : racine web sur `public/`, PHP 8.2+, HTTPS, base de production, `APP_ENV=production`, `APP_DEBUG=false`, SMTP réel, stockage accessible en écriture et cron actif.
+Le guide de mise en ligne détaillé se trouve dans [README.md](README.md). Points impératifs : racine web sur `public/`, PHP maintenu et corrigé (OVHcloud indique le 22 octobre 2026 avoir déployé les correctifs de sécurité sur ses versions PHP 7.4 à 8.5), HTTPS, base de production, `APP_ENV=production`, `APP_DEBUG=false`, SMTP réel, stockage accessible en écriture et cron actif.
 
 Ne régénère pas `APP_KEY` après le déploiement : les notes médicales chiffrées existantes en dépendent. Sauvegarde la base, les images et la clé de chiffrement de manière sécurisée.
