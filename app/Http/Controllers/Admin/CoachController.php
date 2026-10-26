@@ -14,7 +14,10 @@ class CoachController extends Controller
 {
     public function index(): View
     {
-        $coaches = User::where('role', User::ROLE_COACH)->withCount('coachedGroups')->orderBy('name')->get();
+        $coaches = User::where('role', User::ROLE_COACH)
+            ->withCount('coachedGroups')
+            ->orderBy('name')
+            ->paginate(20);
 
         return view('admin.coaches.index', compact('coaches'));
     }

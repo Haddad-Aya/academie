@@ -11,7 +11,9 @@ use App\Models\TrainingSession;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 /** Espace entraîneur (écran presence.html). Vues : coach/groups.blade.php, coach/attendance.blade.php */
@@ -28,10 +30,51 @@ class AttendanceController extends Controller
             ->with(['sessions' => fn ($q) => $q
                 ->where('starts_at', '>=', now()->subDay())
                 ->where('starts_at', '<=', now()->addDays(30))
-                ->orderBy('starts_at')])
+                ->orderBy('starts_at')
+                ->limit(5)])
             ->get();
 
         return view('coach.groups', compact('groups'));
+    }
+
+    /** Historique consultable sans charger toutes les séances dans l'espace principal. */
+    public function history(Request $request): View
+    {
+        $validated = $request->validate([
+            'year' => ['nullable', 'integer', 'min:2020', 'max:2100'],
+            'month' => ['nullable', 'integer', 'between:1,12'],
+            'group_id' => ['nullable', 'integer'],
+        ]);
+
+        $user = $request->user();
+        $year = (int) ($validated['year'] ?? now()->year);
+        $month = isset($validated['month']) ? (int) $validated['month'] : null;
+        $periodStart = Carbon::create($year, $month ?? 1, 1)->startOfMonth();
+        $periodEnd = $month
+            ? $periodStart->copy()->endOfMonth()
+            : Carbon::create($year, 12, 31)->endOfDay();
+        $groups = TrainingGroup::query()
+            ->when($user->role === User::ROLE_COACH, fn ($query) => $query->where('coach_id', $user->id))
+            ->orderBy('name')
+            ->get(['id', 'name']);
+        $groupId = isset($validated['group_id']) && $groups->contains('id', (int) $validated['group_id'])
+            ? (int) $validated['group_id']
+            : null;
+
+        $sessions = TrainingSession::query()
+            ->with('trainingGroup:id,name')
+            ->withCount('attendances')
+            ->withCount(['attendances as present_count' => fn ($query) => $query->where('present', true)])
+            ->whereBetween('starts_at', [$periodStart, $periodEnd])
+            ->when($groupId, fn ($query) => $query->where('training_group_id', $groupId))
+            ->when($user->role === User::ROLE_COACH, fn ($query) => $query->whereHas(
+                'trainingGroup', fn ($groupQuery) => $groupQuery->where('coach_id', $user->id),
+            ))
+            ->orderByDesc('starts_at')
+            ->paginate(20)
+            ->withQueryString();
+
+        return view('coach.sessions.history', compact('sessions', 'groups', 'year', 'month', 'groupId'));
     }
 
     public function storeSession(Request $request, TrainingGroup $group): RedirectResponse
@@ -51,7 +94,7 @@ class AttendanceController extends Controller
         return back()->with('status', 'Séance ajoutée.');
     }
 
-    /** Feuille d'appel. L'entraîneur ne voit que prénom et nom : jamais les notes médicales ni le parent. */
+    /** Feuille d'appel : coordonnées du parent incluses pour les seuls enfants du groupe attribué. */
     public function show(TrainingSession $session): View
     {
         Gate::authorize('manage', $session->trainingGroup);
@@ -71,28 +114,40 @@ class AttendanceController extends Controller
             'present.*' => ['integer'],
         ]);
 
-        $presentIds = $data['present'] ?? [];
-        $now = now();
+        // Recalculer la liste côté serveur évite d'enregistrer des enfants qui
+        // ne sont pas inscrits dans le groupe ou dont l'inscription n'est pas validée.
+        $players = $this->players($session);
+        if ($players->isEmpty()) {
+            return back()->withErrors(['attendance' => 'Aucun enfant avec une inscription validée dans ce groupe. L’appel n’a pas été enregistré.']);
+        }
 
-        // Seuls les enfants réellement inscrits (validés) à ce groupe sont pris en compte.
-        $rows = $this->players($session)->map(fn (Child $c) => [
-            'training_session_id' => $session->id,
-            'child_id' => $c->id,
-            'present' => in_array($c->id, $presentIds, true),
-            'recorded_by' => $request->user()->id,
-            'created_at' => $now,
-            'updated_at' => $now,
-        ])->all();
+        $presentIds = collect($data['present'] ?? [])->map(fn ($id) => (int) $id)->all();
 
-        Attendance::upsert($rows, ['training_session_id', 'child_id'], ['present', 'recorded_by', 'updated_at']);
+        DB::transaction(function () use ($players, $presentIds, $session, $request) {
+            foreach ($players as $child) {
+                Attendance::updateOrCreate(
+                    ['training_session_id' => $session->id, 'child_id' => $child->id],
+                    [
+                        'present' => in_array($child->id, $presentIds, true),
+                        'recorded_by' => $request->user()->id,
+                    ],
+                );
+            }
+        });
 
-        return back()->with('status', 'Appel enregistré.');
+        $savedCount = $session->attendances()->whereIn('child_id', $players->modelKeys())->count();
+        if ($savedCount !== $players->count()) {
+            return back()->withErrors(['attendance' => 'L’appel n’a pas pu être entièrement enregistré. Vérifiez la base de données puis réessayez.']);
+        }
+
+        return back()->with('status', "Appel enregistré et vérifié pour {$savedCount} enfant(s).");
     }
 
     private function players(TrainingSession $session)
     {
         return Child::query()
-            ->select(['id', 'first_name', 'last_name'])
+            ->select(['id', 'parent_id', 'first_name', 'last_name'])
+            ->with('parent:id,name,email,phone')
             ->whereHas('registrations', fn ($q) => $q
                 ->where('training_group_id', $session->training_group_id)
                 ->where('season', config('academy.season'))

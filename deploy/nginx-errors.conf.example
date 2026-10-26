@@ -1,0 +1,8 @@
+# Exemple à adapter et à inclure dans le bloc `server` Nginx du site.
+# Le chemin doit pointer vers le dossier public de l'application.
+error_page 502 503 504 /maintenance.html;
+
+location = /maintenance.html {
+    root /var/www/academie/public;
+    internal;
+}

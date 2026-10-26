@@ -1,59 +1,86 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Académie Future Football Djerba
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Application Laravel pour le site vitrine et la gestion de l'académie : comptes parents, enfants, inscriptions par groupe, présences, galerie, paiements mensuels et espace d'administration.
 
-## About Laravel
+## Prérequis
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP 8.2 ou plus, avec les extensions Laravel nécessaires
+- Composer
+- Node.js et npm
+- SQLite en local ou MySQL/MariaDB sur l'hébergement
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Installation locale
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+```powershell
+composer install
+Copy-Item .env.example .env
+php artisan key:generate
+```
 
-## Learning Laravel
+Configure ensuite la base de données et le mail dans `.env`, puis lance :
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+```powershell
+php artisan migrate --seed
+npm ci
+npm run build
+php artisan storage:link
+php artisan serve
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+L'application est disponible sur `http://127.0.0.1:8000`. Le seeder crée les groupes de départ et un compte administrateur. Configure `ADMIN_EMAIL` et `ADMIN_PASSWORD` avant de lancer le seeder ; si le mot de passe reste vide, un mot de passe aléatoire est affiché une seule fois dans le terminal.
 
-## Laravel Sponsors
+## Déploiement
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+1. Utilise un hébergement PHP maintenu et sécurisé. Le projet demande PHP `^8.2`. Au 22 octobre 2026, OVHcloud indique avoir déployé les correctifs PHP de sécurité sur toutes ses versions 7.4 à 8.5 et sur tous ses clusters. Dans le Manager, choisis une version récente compatible avec Laravel 12 (PHP 8.4 si elle est proposée) et vérifie que l'hébergement est à jour. La racine web du serveur doit pointer vers le dossier `public/`, jamais vers la racine du dépôt.
+2. Configure `.env` sur le serveur : `APP_ENV=production`, `APP_DEBUG=false`, `APP_URL=https://ton-domaine`, une base de données de production, un transport SMTP fonctionnel, et un `APP_KEY` généré une seule fois.
+3. Déploie les dépendances et les fichiers compilés :
 
-### Premium Partners
+   ```sh
+   composer install --no-dev --optimize-autoloader
+   npm ci
+   npm run build
+   php artisan migrate --force
+   php artisan storage:link
+   ```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+4. Lors de la première mise en production seulement, configure `ADMIN_EMAIL` et un mot de passe administrateur robuste avant le seeding, puis exécute :
 
-## Contributing
+   ```sh
+   php artisan db:seed --force
+   ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+   Le seeder lit ces valeurs depuis `config/admin.php`, y compris si le cache de configuration est déjà actif. Si le mot de passe reste vide, un mot de passe aléatoire est affiché une seule fois dans le terminal.
 
-## Code of Conduct
+5. Après le seeding initial, optimise la configuration de Laravel :
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+   ```sh
+   php artisan optimize
+   ```
 
-## Security Vulnerabilities
+6. Configure le cron de l'hébergeur pour exécuter `php artisan schedule:run` chaque minute. Le planificateur crée les échéances mensuelles des inscriptions approuvées.
+7. Après le déploiement, vérifie la connexion, la création d'une inscription, l'envoi d'e-mails et les images de galerie. Confirme un règlement manuel depuis l'administration.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Pages de panne et maintenance
 
-## License
+- Laravel affiche `resources/views/errors/500.blade.php` pour une erreur interne et `resources/views/errors/503.blade.php` pendant le mode maintenance (`php artisan down`). Pour rétablir l'application après maintenance : `php artisan up`.
+- Sur Nginx, adapte et inclus `deploy/nginx-errors.conf.example` dans le bloc `server` pour afficher `public/maintenance.html` lors des erreurs passerelle 502, 503 et 504, lorsque Nginx fonctionne encore mais que PHP/Laravel est indisponible.
+- Si le VPS, le réseau ou le DNS est totalement indisponible, aucune page hébergée sur ce même serveur ne peut être envoyée au visiteur. Il faut alors une page de secours gérée par un proxy/CDN indépendant de l'hébergement.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Ne mets jamais `.env`, les clés API ou les mots de passe dans Git. Après une fuite d'identifiants, révoque-les et génère-en de nouveaux.
+
+## Règlement des cotisations
+
+Les cotisations sont réglées manuellement à l'académie. Le parent voit les échéances mensuelles de chaque enfant ; l'administration confirme chaque règlement après réception. Les anciens paiements restent dans la base à titre d'historique.
+
+## Images de la galerie
+
+Les images envoyées par l'administration sont stockées sur le disque public Laravel. En production, conserve le lien `public/storage` créé par `php artisan storage:link` et configure les limites d'envoi PHP selon la taille autorisée par l'application.
+
+## Commandes utiles
+
+```sh
+php artisan route:list
+php artisan schedule:list
+php artisan test
+npm run build
+```

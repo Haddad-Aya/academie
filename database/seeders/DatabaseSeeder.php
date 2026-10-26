@@ -11,16 +11,16 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // Premier administrateur : identifiants lus dans .env (ADMIN_EMAIL, ADMIN_PASSWORD).
+        // Premier administrateur : identifiants exposés par config/admin.php.
         // Sans mot de passe défini, un mot de passe aléatoire est généré et affiché une seule fois.
-        $password = env('ADMIN_PASSWORD');
+        $password = config('admin.password');
         $generated = false;
         if (! $password) {
             $password = Str::password(16);
             $generated = true;
         }
 
-        $admin = User::firstOrNew(['email' => env('ADMIN_EMAIL', 'admin@example.test')]);
+        $admin = User::firstOrNew(['email' => config('admin.email', 'admin@example.test')]);
         if (! $admin->exists) {
             $admin->name = 'Administrateur';
             $admin->password = $password; // haché par le cast du modèle

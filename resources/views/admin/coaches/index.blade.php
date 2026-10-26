@@ -34,6 +34,7 @@
           </tbody>
         </table>
       </div>
+      <div class="pager" style="margin-top:14px">{{ $coaches->links() }}</div>
     </section>
 
     <section class="card" style="max-width:760px">

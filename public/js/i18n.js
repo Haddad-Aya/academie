@@ -8,7 +8,7 @@ const T = {
     /* connexion */
     login_space: "Espace parents", login_sub: "Suivez vos enfants, inscrivez-les et payez en ligne.",
     tab_login: "Connexion", tab_signup: "Créer un compte",
-    f_id: "Téléphone ou e-mail", f_pass: "Mot de passe", f_name: "Nom complet", f_pass2: "Confirmer le mot de passe",
+    f_id: "Téléphone ou e-mail", f_pass: "Mot de passe", f_name: "Nom complet", f_phone_req: "Téléphone du parent", f_pass2: "Confirmer le mot de passe",
     forgot: "Mot de passe oublié ?", btn_login: "Se connecter", btn_signup: "Créer mon compte",
     help: "Besoin d'aide ?", wa: "Écrire sur WhatsApp",
     /* accueil parent */
@@ -29,8 +29,8 @@ const T = {
     g3: "U13 · Développement", g3_w: "Mar, Jeu & Sam · 17h30",
     sum: "Récapitulatif", fee: "Frais d'inscription", kit: "Équipement (optionnel)", total: "Total", total_v: "[TOTAL] DT",
     photo: "J'autorise l'académie à photographier mon enfant lors des activités (facultatif).",
-    secure: "Vous serez redirigé vers la page de paiement sécurisée de notre prestataire. L'académie ne conserve aucune donnée bancaire.",
-    pay_online: "Payer en ligne", pay_later: "Payer plus tard ou sur place",
+    onsite_note: "La cotisation mensuelle sera réglée sur place à l’académie. L’administration confirmera le paiement après réception.",
+    register_onsite: "Envoyer l’inscription · règlement sur place", onsite_details: "Règlement sur place",
     /* présence */
     att_title: "Feuille de présence", coach: "Coach Mehdi", here: "présents",
     session: "U11 · Mardi · 17h00 · Stade municipal", att_hint: "Touchez un joueur pour changer son statut.",
@@ -55,18 +55,23 @@ const T = {
     f_first: "Prénom", f_last: "Nom", f_birth: "Date de naissance", f_medical: "Informations médicales utiles (allergies, asthme…)",
     f_photo: "J'autorise la publication de photos de mon enfant", save: "Enregistrer",
     f_email_req: "E-mail", f_remember: "Se souvenir de moi", no_account: "Pas encore de compte ?", have_account: "Déjà un compte ?",
-    pend_title: "Paiement sur place ou par virement",
-    pend_text: "Le paiement en ligne n'est pas encore activé. Réglez le montant à l'académie ou par virement : l'administrateur confirmera votre paiement.",
-    pend_amount: "Montant à régler", ret_title: "Statut du paiement", st_paid: "Paiement reçu. Merci !",
-    st_pending: "Paiement en attente de confirmation.", st_failed: "Le paiement a échoué.", retry: "Réessayer", go_home: "Retour à l'accueil",
+    pend_title: "Règlement sur place",
+    pend_text: "Réglez cette cotisation à l’académie. L’administration confirmera le paiement après réception.",
+    pend_amount: "Montant à régler", go_home: "Retour à l'accueil",
     cg_title: "Mes groupes", add_session: "Ajouter une séance", date_time: "Date et heure", no_sessions: "Aucune séance prévue.",
-    open_call: "Faire l'appel", no_groups: "Aucun groupe ne vous est attribué."
+    open_call: "Faire l'appel", no_groups: "Aucun groupe ne vous est attribué.",
+    session_history_link: "Consulter toutes les séances et l'historique", session_history: "Séances et historique",
+    session_history_sub: "Retrouvez les séances et les appels par période.", history_year: "Année", history_month: "Mois",
+    history_all_months: "Toute l'année", history_group: "Groupe", history_all_groups: "Tous les groupes",
+    history_filter: "Filtrer les séances", history_call_done: "Appel fait", history_call_todo: "Appel à faire",
+    history_call_edit: "Consulter ou modifier l'appel", history_empty: "Aucune séance trouvée pour cette période.",
+    history_no_location: "Lieu non précisé"
   },
   ar: {
     brand: "أكاديمية دجربة لكرة القدم المستقبلية", logo: "", langBtn: "Français",
     login_space: "فضاء الأولياء", login_sub: "تابعوا أبناءكم وسجّلوهم وادفعوا عبر الإنترنت.",
     tab_login: "الدخول", tab_signup: "إنشاء حساب",
-    f_id: "الهاتف أو البريد الإلكتروني", f_pass: "كلمة العبور", f_name: "الاسم الكامل", f_pass2: "تأكيد كلمة العبور",
+    f_id: "الهاتف أو البريد الإلكتروني", f_pass: "كلمة العبور", f_name: "الاسم الكامل", f_phone_req: "هاتف الولي", f_pass2: "تأكيد كلمة العبور",
     forgot: "نسيت كلمة العبور؟", btn_login: "تسجيل الدخول", btn_signup: "إنشاء حسابي",
     help: "تحتاج مساعدة؟", wa: "راسلنا على واتساب",
     hi: "مرحبًا، سنية", hi_sub: "إليكم متابعة أبنائكم.",
@@ -85,8 +90,8 @@ const T = {
     g3: "U13 · التطوير", g3_w: "الثلاثاء والخميس والسبت · 17:30",
     sum: "الملخّص", fee: "معلوم التسجيل", kit: "التجهيزات (اختياري)", total: "المجموع", total_v: "[المجموع] د.ت",
     photo: "أسمح للأكاديمية بتصوير طفلي خلال الأنشطة (اختياري).",
-    secure: "سيتم توجيهك إلى صفحة الدفع الآمنة لدى مزوّد الخدمة. لا تحتفظ الأكاديمية بأي معطيات بنكية.",
-    pay_online: "ادفع عبر الإنترنت", pay_later: "الدفع لاحقًا أو في عين المكان",
+    onsite_note: "تُدفع المساهمة الشهرية في الأكاديمية. يؤكد المسؤول الدفع بعد استلامه.",
+    register_onsite: "إرسال التسجيل · الدفع في الأكاديمية", onsite_details: "الدفع في الأكاديمية",
     att_title: "ورقة الحضور", coach: "المدرب مهدي", here: "حاضرون",
     session: "U11 · الثلاثاء · 17:00 · الملعب البلدي", att_hint: "المس اللاعب لتغيير حالته.",
     present: "حاضر", absent: "غائب", save_att: "حفظ الحضور", saved: "تم حفظ الحضور.",
@@ -109,12 +114,17 @@ const T = {
     f_first: "الاسم", f_last: "اللقب", f_birth: "تاريخ الولادة", f_medical: "معلومات صحية مفيدة (حساسية، ربو…)",
     f_photo: "أسمح بنشر صور طفلي", save: "حفظ",
     f_email_req: "البريد الإلكتروني", f_remember: "تذكّرني", no_account: "ليس لديك حساب؟", have_account: "لديك حساب؟",
-    pend_title: "الدفع في عين المكان أو بالتحويل",
-    pend_text: "الدفع عبر الإنترنت غير مفعّل بعد. ادفعوا المبلغ في الأكاديمية أو بالتحويل، وسيؤكّد المسؤول الدفع.",
-    pend_amount: "المبلغ المطلوب", ret_title: "حالة الدفع", st_paid: "تم استلام الدفع. شكرًا!",
-    st_pending: "الدفع في انتظار التأكيد.", st_failed: "فشلت عملية الدفع.", retry: "إعادة المحاولة", go_home: "العودة إلى الرئيسية",
+    pend_title: "الدفع في الأكاديمية",
+    pend_text: "يرجى دفع هذه المساهمة في الأكاديمية. يؤكد المسؤول الدفع بعد استلامه.",
+    pend_amount: "المبلغ المطلوب", go_home: "العودة إلى الرئيسية",
     cg_title: "مجموعاتي", add_session: "إضافة حصة", date_time: "التاريخ والساعة", no_sessions: "لا توجد حصص مبرمجة.",
-    open_call: "تسجيل الحضور", no_groups: "لم يتم إسناد أي مجموعة إليك."
+    open_call: "تسجيل الحضور", no_groups: "لم يتم إسناد أي مجموعة إليك.",
+    session_history_link: "عرض جميع الحصص والسجل", session_history: "الحصص والسجل",
+    session_history_sub: "اعثر على الحصص وسجلات الحضور حسب الفترة.", history_year: "السنة", history_month: "الشهر",
+    history_all_months: "السنة كاملة", history_group: "المجموعة", history_all_groups: "جميع المجموعات",
+    history_filter: "تصفية الحصص", history_call_done: "تم تسجيل الحضور", history_call_todo: "تسجيل الحضور مطلوب",
+    history_call_edit: "عرض سجل الحضور أو تعديله", history_empty: "لم يتم العثور على حصص في هذه الفترة.",
+    history_no_location: "المكان غير محدد"
   }
 };
 
@@ -142,6 +152,10 @@ function setLang(l) {
   var b = document.getElementById("langBtn");
   if (b) b.textContent = T[l].langBtn;
   try { localStorage.setItem("lang", l); } catch (e) {}
+  // Le cookie permet aux requêtes Laravel (validation, connexion, etc.)
+  // d'utiliser la même langue que l'interface côté navigateur.
+  document.cookie = "locale=" + l + "; path=/; max-age=31536000; samesite=lax" +
+    (location.protocol === "https:" ? "; secure" : "");
   document.dispatchEvent(new CustomEvent("langchange", { detail: l }));
 }
 

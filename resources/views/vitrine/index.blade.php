@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Academie Future Football Djerba</title>
 <meta name="description" content="Academie Future Football Djerba : formation de football pour enfants et jeunes, discipline et plaisir de jouer.">
+<link rel="icon" type="image/png" sizes="192x192" href="{{ asset('favicon.png') }}?v=1">
+<link rel="shortcut icon" href="{{ asset('favicon.ico') }}?v=1">
+<link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}?v=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
@@ -168,7 +171,7 @@ footer{background:#0b1d3e;color:#d2dfed;text-align:center;padding:26px 0;font-si
     <h1 data-i18n="hero_title">Là où naissent les futurs champions</h1>
     <p data-i18n="hero_text">Une formation sérieuse, un encadrement diplômé et beaucoup de plaisir pour les enfants de 6 à 17 ans. Venez essayer gratuitement une séance.</p>
     <div class="btns">
-      <a href="#register" class="btn btn-primary" data-i18n="hero_cta1">Réserver un essai gratuit</a>
+      <a href="/login" class="btn btn-primary" data-i18n="hero_cta1">Réserver un essai gratuit</a>
       <a href="#programs" class="btn btn-ghost" data-i18n="hero_cta2">Voir les programmes</a>
     </div>
   </div>

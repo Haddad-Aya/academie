@@ -19,7 +19,7 @@
         <table>
           <thead><tr><th>Groupe</th><th>Âges</th><th>Horaires</th><th>Entraîneur</th><th>Places</th><th>Cotisation mensuelle</th><th>État</th><th></th></tr></thead>
           <tbody>
-            @foreach ($groups as $g)
+            @forelse ($groups as $g)
               <tr>
                 <td><strong>{{ $g->name }}</strong></td>
                 <td>{{ $g->age_min }}–{{ $g->age_max }} ans</td>
@@ -30,10 +30,13 @@
                 <td>@if ($g->active) <span class="badge badge-ok">Actif</span> @else <span class="badge badge-off">Inactif</span> @endif</td>
                 <td><a class="btn btn-outline btn-sm" href="{{ route('admin.groups.edit', $g) }}">Modifier</a></td>
               </tr>
-            @endforeach
+            @empty
+              <tr><td colspan="8" class="muted">Aucun groupe pour le moment.</td></tr>
+            @endforelse
           </tbody>
         </table>
       </div>
+      <div class="pager" style="margin-top:14px">{{ $groups->links() }}</div>
     </section>
   </main>
 </div>

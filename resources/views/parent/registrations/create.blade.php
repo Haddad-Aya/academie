@@ -44,12 +44,11 @@
       </label>
     @endforeach
 
-    <p class="note" data-i18n="secure">Vous serez redirigé vers la page de paiement sécurisée de notre prestataire. L'académie ne conserve aucune donnée bancaire.</p>
+    <p class="note" data-i18n="onsite_note">La cotisation mensuelle sera réglée sur place à l’académie. L’administration confirmera le paiement après réception.</p>
   </form>
 
   <div class="footbar">
-    <button class="btn btn-primary btn-block" type="submit" form="regForm" name="pay" value="online" data-i18n="pay_online">Payer en ligne</button>
-    <button class="btn" type="submit" form="regForm" name="pay" value="later" style="min-height:44px;font-size:.9rem" data-i18n="pay_later">Payer plus tard ou sur place</button>
+    <button class="btn btn-primary btn-block" type="submit" form="regForm" data-i18n="register_onsite">Envoyer l’inscription · règlement sur place</button>
   </div>
 </div>
 @endsection

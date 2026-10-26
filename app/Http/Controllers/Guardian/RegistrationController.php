@@ -32,7 +32,6 @@ class RegistrationController extends Controller
 
         $data = $request->validate([
             'training_group_id' => ['required', 'integer', 'exists:training_groups,id'],
-            'pay' => ['nullable', 'in:online,later'],
         ]);
 
         $season = config('academy.season');
@@ -51,7 +50,7 @@ class RegistrationController extends Controller
             return back()->withErrors(['training_group_id' => 'Ce groupe est complet.']);
         }
 
-        $payment = DB::transaction(function () use ($child, $group, $season) {
+        DB::transaction(function () use ($child, $group, $season) {
             $registration = new Registration([
                 'child_id' => $child->id,
                 'training_group_id' => $group->id,
@@ -67,18 +66,15 @@ class RegistrationController extends Controller
 
             return Payment::create([
                 'registration_id' => $registration->id,
-                'provider' => config('payments.driver'),
+                'provider' => 'manual',
                 'amount' => $group->price,
                 'currency' => config('payments.currency'),
                 'billing_month' => now()->format('Y-m'),
+                'payment_method' => Payment::METHOD_ONSITE,
             ]);
         });
 
-        if ($payment && ($data['pay'] ?? 'later') === 'online') {
-            return redirect()->route('parent.payments.checkout', $payment);
-        }
-
         return redirect()->route('parent.dashboard')
-            ->with('status', 'Inscription envoyée. Elle sera confirmée par l\'académie.');
+            ->with('status', 'Inscription envoyée. Le règlement mensuel se fera sur place à l’académie.');
     }
 }

@@ -6,7 +6,8 @@
   <a href="{{ route('admin.groups.index') }}" @if (request()->routeIs('admin.groups.*')) aria-current="page" @endif>Groupes</a>
   <a href="{{ route('admin.coaches.index') }}" @if (request()->routeIs('admin.coaches.*')) aria-current="page" @endif>Entraîneurs</a>
   <a href="{{ route('admin.gallery.index') }}" @if (request()->routeIs('admin.gallery.*')) aria-current="page" @endif>Galerie du site</a>
-  <a href="{{ route('admin.payments.index') }}" @if (request()->routeIs('admin.payments.*')) aria-current="page" @endif>Paiements</a>
+  <a href="{{ route('admin.payments.index') }}" @if (request()->routeIs('admin.payments.index', 'admin.payments.paid')) aria-current="page" @endif>Paiements</a>
+  <a href="{{ route('admin.payments.statistics') }}" @if (request()->routeIs('admin.payments.statistics')) aria-current="page" @endif>Statistiques des paiements</a>
   <a href="{{ route('coach.groups') }}">Espace entraîneur</a>
 
   <form method="POST" action="{{ route('logout') }}" style="margin-top:auto">

@@ -30,9 +30,10 @@ class GenerateMonthlyPayments extends Command
                             'billing_month' => $month,
                         ],
                         [
-                            'provider' => config('payments.driver'),
+                            'provider' => 'manual',
                             'amount' => $registration->trainingGroup->price,
                             'currency' => config('payments.currency'),
+                            'payment_method' => Payment::METHOD_ONSITE,
                         ],
                     );
 

@@ -13,7 +13,10 @@ class GalleryController extends Controller
 {
     public function index(): View
     {
-        $items = AcademyGalleryItem::query()->orderBy('sort_order')->orderByDesc('created_at')->get();
+        $items = AcademyGalleryItem::query()
+            ->orderBy('sort_order')
+            ->orderByDesc('created_at')
+            ->paginate(12);
 
         return view('admin.gallery.index', compact('items'));
     }

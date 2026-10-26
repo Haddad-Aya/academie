@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\EnsureRole;
+use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -17,14 +18,15 @@ return Application::configure(basePath: dirname(__DIR__))
         // des URL HTTPS quand la requête publique est chiffrée.
         $middleware->trustProxies(at: '*');
 
+        // Synchronise la langue choisie dans l'interface avec Laravel
+        // (validation, authentification et autres messages côté serveur).
+        $middleware->web(append: [SetLocale::class]);
+
         // Alias utilisé dans routes/web.php : ->middleware('role:admin')
         $middleware->alias([
             'role' => EnsureRole::class,
         ]);
 
-        // Le prestataire de paiement appelle cette URL sans jeton CSRF :
-        // l'authenticité est vérifiée par la signature du webhook.
-        $middleware->validateCsrfTokens(except: ['webhooks/*']);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
